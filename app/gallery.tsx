@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { use, useEffect, useState } from "react";
 import Avatar from "boring-avatars";
 import {
   FaRegCircleXmark,
@@ -8,6 +8,7 @@ import {
   FaPhone,
   FaEnvelope,
 } from "react-icons/fa6";
+import axios from "axios";
 
 import Modal from "./modal";
 
@@ -17,9 +18,33 @@ export type GalleryProps = {
   users: User[];
 };
 const Gallery = ({ users }: GalleryProps) => {
-  const [usersList, setUsersList] = useState(users);
+  const [usersList, setUsersList] = useState([]);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+
+  useEffect(() => {
+    axios.get("https://randomuser.me/api/?results=16").then((response) => {
+      const users = response.data.results.map((user) => {
+        user.company = {
+          name: user.location.country
+        };
+        user.name = `${user.name.first} ${user.name.last}`;
+        user.username = user.login.username,
+        user.address = {
+          street: `${user.location.street.number} ${user.location.street.name}`,
+          suite: "N/A",
+          city: user.location.city,
+          zipcode: user.location.postcode,
+          geo: {
+            lat: user.location.coordinates.latitude,
+            lng: user.location.coordinates.longitude
+          }
+        };
+        return user;
+      })
+      setUsersList(users);
+    });
+  }, [])
 
   const handleModalOpen = (id: number) => {
     const user = usersList.find((item) => item.id === id) || null;
