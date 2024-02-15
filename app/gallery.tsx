@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Avatar from "boring-avatars";
 import {
   FaRegCircleXmark,
@@ -14,6 +14,14 @@ import Modal from "./modal";
 
 import { User } from "./types/user";
 
+export type FieldTypes = "company" | "name" | "email";
+export type DirectionTypes = "ascending" | "descending";
+
+export type SortProps = {
+  field: FieldTypes | null;
+  direction: DirectionTypes | null;
+};
+
 export type GalleryProps = {
   users: User[];
 };
@@ -21,6 +29,7 @@ const Gallery = ({ users }: GalleryProps) => {
   const [usersList, setUsersList] = useState(users);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectOption, setSelectOption] = useState<SortProps>({ field: null, direction: null});
 
   const handleModalOpen = (id: number) => {
     const user = usersList.find((item) => item.id === id) || null;
@@ -36,11 +45,31 @@ const Gallery = ({ users }: GalleryProps) => {
     setIsModalOpen(false);
   };
 
+  useEffect(() => {
+    if (!selectOption.field || !selectOption.direction) {
+      return;
+    }
+
+    const sorted = [...usersList].sort((a, b) => {
+      const first = selectOption.field === "company" ? a.company.name : a[selectOption.field!];
+      const second = selectOption.field === "company" ? b.company.name : b[selectOption.field!];
+      
+      if (selectOption.direction === "ascending") {
+        return first < second ? -1 : first > second ? 1 : 0;
+      } else if (selectOption.direction === "descending") {
+        return second < first ? -1 : second > first ? 1 : 0;
+      }
+
+      return 0;
+    });
+    setUsersList(sorted);
+  }, [selectOption])
+
   return (
     <div className="user-gallery">
       <div className="heading">
         <h1 className="title">Users</h1>
-        <Controls />
+        <Controls setSelectOption={setSelectOption} />
       </div>
       <div className="items">
         {usersList.map((user, index) => (
