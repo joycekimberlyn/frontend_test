@@ -31,7 +31,7 @@ const Gallery = ({ users }: GalleryProps) => {
         user.name = `${user.name.first} ${user.name.last}`;
         user.username = user.login.username,
         user.address = {
-          street: user.location.street,
+          street: `${user.location.street.number} ${user.location.street.name}`,
           suite: "N/A",
           city: user.location.city,
           zipcode: user.location.postcode,
