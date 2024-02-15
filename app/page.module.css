@@ -127,8 +127,24 @@
   }
 }
 
+@media screen and (max-width: 1200px) {
+  .main {
+    padding: 4rem 3rem;
+  }
+}
+
+@media screen and (max-width: 991px) {
+  .main {
+    padding: 4rem 2rem;
+  }
+}
+
 /* Mobile */
 @media (max-width: 700px) {
+  .main {
+    padding: 1rem;
+  }
+
   .content {
     padding: 4rem;
   }
